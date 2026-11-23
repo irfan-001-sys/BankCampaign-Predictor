@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "";
 const form = document.getElementById("prediction-form");
 const predictButton = document.getElementById("predict-button");
 const resultPlaceholder = document.getElementById("result-placeholder");
