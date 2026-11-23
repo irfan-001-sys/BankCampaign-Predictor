@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankReach | Campaign Response Prediction</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">B</div>
+                <div>
+                    <h2>BankReach</h2>
+                    <p>Campaign Intelligence</p>
+                </div>
+            </div>
+
+            <div class="side-label">WORKSPACE</div>
+            <a class="nav-link active" href="#predict-section">
+                <span>▦</span> Prediction
+            </a>
+            <a class="nav-link" href="#history-section">
+                <span>◷</span> Prediction History
+            </a>
+
+            <div class="sidebar-note">
+                <div class="note-icon">✦</div>
+                <strong>Smart prioritization</strong>
+                <p>Use response probabilities to focus campaign calls on customers with stronger subscription potential.</p>
+            </div>
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                ML service interface
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">BANKING CAMPAIGN / DASHBOARD</p>
+                    <h1>Campaign Response Predictor</h1>
+                    <p class="topbar-subtitle">Estimate a customer's likelihood of subscribing to a term deposit.</p>
+                </div>
+                <div class="api-pill" id="api-status">
+                    <span class="status-dot"></span>
+                    Checking API
+                </div>
+            </header>
+
+            <section class="metric-strip">
+                <div class="metric-card">
+                    <span class="metric-label">MODEL</span>
+                    <strong>Random Forest</strong>
+                    <small>Classification model</small>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">DECISION THRESHOLD</span>
+                    <strong id="threshold-value">0.40</strong>
+                    <small>Configured model threshold</small>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">PREDICTION TYPE</span>
+                    <strong>Term Deposit</strong>
+                    <small>Yes / No subscription</small>
+                </div>
+            </section>
+
+            <section class="content-grid" id="predict-section">
+                <div class="panel form-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="eyebrow">CUSTOMER DETAILS</p>
+                            <h2>Enter customer information</h2>
+                            <p class="muted">Complete the fields below to generate a prediction.</p>
+                        </div>
+                        <span class="step-badge">01 / INPUT</span>
+                    </div>
+
+                    <form id="prediction-form">
+                        <div class="form-section-title">Personal profile</div>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span>Age</span>
+                                <input type="number" name="age" min="17" max="100" value="35" required>
+                            </label>
+                            <label class="field">
+                                <span>Job</span>
+                                <select name="job" required>
+                                    <option value="admin.">Admin</option>
+                                    <option value="blue-collar">Blue-collar</option>
+                                    <option value="entrepreneur">Entrepreneur</option>
+                                    <option value="housemaid">Housemaid</option>
+                                    <option value="management">Management</option>
+                                    <option value="retired">Retired</option>
+                                    <option value="self-employed">Self-employed</option>
+                                    <option value="services">Services</option>
+                                    <option value="student">Student</option>
+                                    <option value="technician">Technician</option>
+                                    <option value="unemployed">Unemployed</option>
+                                    <option value="unknown">Unknown</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Marital status</span>
+                                <select name="marital">
+                                    <option value="married">Married</option>
+                                    <option value="single">Single</option>
+                                    <option value="divorced">Divorced</option>
+                                    <option value="unknown">Unknown</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Education</span>
+                                <select name="education">
+                                    <option value="university.degree">University degree</option>
+                                    <option value="high.school">High school</option>
+                                    <option value="professional.course">Professional course</option>
+                                    <option value="basic.4y">Basic 4 years</option>
+                                    <option value="basic.6y">Basic 6 years</option>
+                                    <option value="basic.9y">Basic 9 years</option>
+                                    <option value="illiterate">Illiterate</option>
+                                    <option value="unknown">Unknown</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="form-section-title">Financial profile</div>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span>Credit in default</span>
+                                <select name="default">
+                                    <option value="no">No</option>
+                                    <option value="unknown">Unknown</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Housing loan</span>
+                                <select name="housing">
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                    <option value="unknown">Unknown</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Personal loan</span>
+                                <select name="loan">
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="unknown">Unknown</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="form-section-title">Campaign information</div>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span>Campaign month</span>
+                                <select name="month">
+                                    <option value="may">May</option>
+                                    <option value="jan">January</option>
+                                    <option value="feb">February</option>
+                                    <option value="mar">March</option>
+                                    <option value="apr">April</option>
+                                    <option value="jun">June</option>
+                                    <option value="jul">July</option>
+                                    <option value="aug">August</option>
+                                    <option value="sep">September</option>
+                                    <option value="oct">October</option>
+                                    <option value="nov">November</option>
+                                    <option value="dec">December</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Day of week</span>
+                                <select name="day_of_week">
+                                    <option value="mon">Monday</option>
+                                    <option value="tue">Tuesday</option>
+                                    <option value="wed">Wednesday</option>
+                                    <option value="thu">Thursday</option>
+                                    <option value="fri">Friday</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Contacts during this campaign</span>
+                                <input type="number" name="campaign" min="1" max="100" value="1" required>
+                            </label>
+                            <label class="field">
+                                <span>Previous contacts</span>
+                                <input type="number" name="previous" min="0" max="100" value="0" required>
+                            </label>
+                            <label class="field">
+                                <span>Previous campaign outcome</span>
+                                <select name="poutcome">
+                                    <option value="nonexistent">No previous campaign</option>
+                                    <option value="failure">Failure</option>
+                                    <option value="success">Success</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="privacy-note">
+                            <span>ⓘ</span>
+                            Contact type and economic indicators are supplied by the backend using saved training-data defaults. They are not entered here.
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="reset" class="button button-secondary">Reset form</button>
+                            <button type="submit" class="button button-primary" id="predict-button">
+                                <span>Generate prediction</span>
+                                <span aria-hidden="true">→</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel result-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="eyebrow">MODEL OUTPUT</p>
+                            <h2>Prediction result</h2>
+                            <p class="muted">The result will appear after submission.</p>
+                        </div>
+                        <span class="step-badge">02 / RESULT</span>
+                    </div>
+
+                    <div class="result-placeholder" id="result-placeholder">
+                        <div class="placeholder-icon">◎</div>
+                        <h3>Waiting for customer data</h3>
+                        <p>Enter the customer details and select Generate prediction to view the model's result.</p>
+                    </div>
+
+                    <div class="result-content hidden" id="result-content">
+                        <div class="result-status" id="result-status">Customer Likely to Subscribe</div>
+                        <p class="probability-label">Subscription probability</p>
+                        <div class="probability-number"><span id="probability-value">0</span><small>%</small></div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="probability-bar"></div>
+                        </div>
+                        <div class="result-details">
+                            <div>
+                                <span>Decision</span>
+                                <strong id="subscription-value">Yes</strong>
+                            </div>
+                            <div>
+                                <span>Priority</span>
+                                <strong id="priority-value" class="priority-medium">Medium</strong>
+                            </div>
+                            <div>
+                                <span>Threshold</span>
+                                <strong id="result-threshold">0.40</strong>
+                            </div>
+                        </div>
+                        <div class="recommendation" id="recommendation">
+                            This customer is a potential campaign lead.
+                        </div>
+                    </div>
+
+                    <div class="error-box hidden" id="error-box"></div>
+                </div>
+            </section>
+
+            <section class="panel history-panel" id="history-section">
+                <div class="panel-heading history-heading">
+                    <div>
+                        <p class="eyebrow">DATABASE RECORDS</p>
+                        <h2>Recent prediction history</h2>
+                        <p class="muted">Latest predictions saved by this application.</p>
+                    </div>
+                    <button class="button button-secondary button-small" id="refresh-history">Refresh history</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Time (UTC)</th>
+                                <th>Age</th>
+                                <th>Subscription</th>
+                                <th>Probability</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <tr><td colspan="6" class="empty-table">No predictions recorded yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                Banking Campaign Response Prediction · Random Forest · Academic project
+            </footer>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
