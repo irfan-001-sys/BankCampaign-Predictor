@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankReach | Campaign Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">B</div>
+                <div>
+                    <h2>BankReach</h2>
+                    <p>Campaign Intelligence</p>
+                </div>
+            </div>
+
+            <div class="side-label">WORKSPACE</div>
+            <a class="nav-link active" href="/dashboard.html">
+                <span>⌂</span> Dashboard
+            </a>
+            <a class="nav-link" href="/index.html">
+                <span>▦</span> Prediction
+            </a>
+            <a class="nav-link" href="/index.html#history-section">
+                <span>◷</span> Prediction History
+            </a>
+
+            <div class="sidebar-note">
+                <div class="note-icon">✦</div>
+                <strong>Smart prioritization</strong>
+                <p>Use response probabilities to focus campaign calls on customers with stronger subscription potential.</p>
+            </div>
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                ML service interface
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">BANKREACH / CAMPAIGN MANAGEMENT</p>
+                    <h1>Campaign Analytics Dashboard</h1>
+                    <p class="topbar-subtitle">Monitor subscription outcomes and customer prioritization.</p>
+                </div>
+                <div class="api-pill" id="api-status">
+                    <span class="status-dot"></span>
+                    Campaign analytics
+                </div>
+            </header>
+
+            <section class="dashboard-section" id="dashboard-section">
+                <div class="dashboard-heading">
+                    <p class="eyebrow">CAMPAIGN OVERVIEW</p>
+                    <h2>Campaign analytics</h2>
+                    <p class="muted">Visual summary of the predictions saved in your application.</p>
+                </div>
+
+                <div class="analytics-summary">
+                    <div class="analytics-stat">
+                        <span>Total predictions</span>
+                        <strong id="chart-total">0</strong>
+                    </div>
+                    <div class="analytics-stat">
+                        <span>Likely to subscribe</span>
+                        <strong id="chart-yes">0</strong>
+                    </div>
+                    <div class="analytics-stat">
+                        <span>Unlikely to subscribe</span>
+                        <strong id="chart-no">0</strong>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <article class="panel chart-panel">
+                        <div class="chart-title">
+                            <div>
+                                <h3>Subscription outcomes</h3>
+                                <p class="muted">Yes vs No predictions</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="subscriptionChart"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="panel chart-panel">
+                        <div class="chart-title">
+                            <div>
+                                <h3>Customer priority</h3>
+                                <p class="muted">Distribution of campaign leads</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="priorityChart"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="panel chart-panel chart-panel-wide">
+                        <div class="chart-title">
+                            <div>
+                                <h3>Prediction activity</h3>
+                                <p class="muted">Recent saved predictions by outcome</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrap chart-wrap-wide">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </article>
+                </div>
+                <p class="chart-footnote">Charts update from the prediction history displayed below. Create predictions to build your analytics.</p>
+            </section>
+
+            <section class="panel history-panel" id="history-section">
+                <div class="panel-heading history-heading">
+                    <div>
+                        <p class="eyebrow">DATABASE RECORDS</p>
+                        <h2>Recent prediction history</h2>
+                        <p class="muted">Latest predictions saved by this application.</p>
+                    </div>
+                    <button class="button button-secondary button-small" id="refresh-history">Refresh history</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Time (UTC)</th><th>Age</th>
+                                <th>Subscription</th><th>Probability</th><th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <tr><td colspan="6" class="empty-table">Loading prediction history...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                Banking Campaign Response Prediction · Random Forest · Academic project
+            </footer>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
