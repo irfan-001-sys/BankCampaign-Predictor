@@ -18,7 +18,10 @@
             </div>
 
             <div class="side-label">WORKSPACE</div>
-            <a class="nav-link active" href="#predict-section">
+            <a class="nav-link active" href="#dashboard-section">
+                <span>⌂</span> Dashboard
+            </a>
+            <a class="nav-link" href="#predict-section">
                 <span>▦</span> Prediction
             </a>
             <a class="nav-link" href="#history-section">
@@ -40,8 +43,8 @@
         <main class="main-content">
             <header class="topbar">
                 <div>
-                    <p class="eyebrow">BANKING CAMPAIGN / DASHBOARD</p>
-                    <h1>Campaign Response Predictor</h1>
+                    <p class="eyebrow">BANKREACH / CAMPAIGN MANAGEMENT</p>
+                    <h1>Campaign Manager Dashboard</h1>
                     <p class="topbar-subtitle">Estimate a customer's likelihood of subscribing to a term deposit.</p>
                 </div>
                 <div class="api-pill" id="api-status">
@@ -66,6 +69,69 @@
                     <strong>Term Deposit</strong>
                     <small>Yes / No subscription</small>
                 </div>
+            </section>
+
+
+            <section class="dashboard-section" id="dashboard-section">
+                <div class="dashboard-heading">
+                    <p class="eyebrow">CAMPAIGN OVERVIEW</p>
+                    <h2>Campaign analytics</h2>
+                    <p class="muted">Visual summary of the predictions saved in your application.</p>
+                </div>
+
+                <div class="analytics-summary">
+                    <div class="analytics-stat">
+                        <span>Total predictions</span>
+                        <strong id="chart-total">0</strong>
+                    </div>
+                    <div class="analytics-stat">
+                        <span>Likely to subscribe</span>
+                        <strong id="chart-yes">0</strong>
+                    </div>
+                    <div class="analytics-stat">
+                        <span>Unlikely to subscribe</span>
+                        <strong id="chart-no">0</strong>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <article class="panel chart-panel">
+                        <div class="chart-title">
+                            <div>
+                                <h3>Subscription outcomes</h3>
+                                <p class="muted">Yes vs No predictions</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="subscriptionChart"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="panel chart-panel">
+                        <div class="chart-title">
+                            <div>
+                                <h3>Customer priority</h3>
+                                <p class="muted">Distribution of campaign leads</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="priorityChart"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="panel chart-panel chart-panel-wide">
+                        <div class="chart-title">
+                            <div>
+                                <h3>Prediction activity</h3>
+                                <p class="muted">Recent saved predictions by outcome</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrap chart-wrap-wide">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </article>
+                </div>
+                <p class="chart-footnote">Charts update from the prediction history displayed below. Create predictions to build your analytics.</p>
             </section>
 
             <section class="content-grid" id="predict-section">
@@ -290,25 +356,157 @@
                     </table>
                 </div>
             </section>
-             <div class="side-label">WORKSPACE</div><a class="nav-link active" href="#dashboard-section">    <span>⌂</span> Dashboard</a><a class="nav-link" href="#predict-section">    <span>▦</span> Prediction</a><a class="nav-link" href="#history-section">    <span>◷</span> Prediction History</a><div class="side-label">WORKSPACE</div>
 
-<a class="nav-link active" href="#dashboard-section">
-    <span>⌂</span> Dashboard
-</a>
-
-<a class="nav-link" href="#predict-section">
-    <span>▦</span> Prediction
-</a>
-
-<a class="nav-link" href="#history-section">
-    <span>◷</span> Prediction History
-</a>
             <footer class="page-footer">
                 Banking Campaign Response Prediction · Random Forest · Academic project
             </footer>
         </main>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/static/script.js"></script>
+    <script>
+        (() => {
+            let subscriptionChart;
+            let priorityChart;
+            let activityChart;
+
+            function readHistoryRows() {
+                return [...document.querySelectorAll("#history-body tr")]
+                    .filter(row => row.querySelectorAll("td").length >= 6)
+                    .map(row => {
+                        const cells = row.querySelectorAll("td");
+                        return {
+                            subscription: cells[3].textContent.trim().toLowerCase(),
+                            priority: cells[5].textContent.trim().toLowerCase(),
+                            time: cells[1].textContent.trim()
+                        };
+                    })
+                    .filter(item =>
+                        ["yes", "no"].includes(item.subscription) &&
+                        !item.subscription.includes("no predictions")
+                    );
+            }
+
+            function buildCharts() {
+                if (typeof Chart === "undefined") return;
+
+                const rows = readHistoryRows();
+                const yes = rows.filter(r => r.subscription === "yes").length;
+                const no = rows.filter(r => r.subscription === "no").length;
+                const high = rows.filter(r => r.priority.includes("high")).length;
+                const medium = rows.filter(r => r.priority.includes("medium")).length;
+                const low = rows.filter(r => r.priority.includes("low")).length;
+
+                document.getElementById("chart-total").textContent = rows.length;
+                document.getElementById("chart-yes").textContent = yes;
+                document.getElementById("chart-no").textContent = no;
+
+                const commonOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: "bottom", labels: { usePointStyle: true, padding: 18 } }
+                    }
+                };
+
+                const subscriptionCanvas = document.getElementById("subscriptionChart");
+                const priorityCanvas = document.getElementById("priorityChart");
+                const activityCanvas = document.getElementById("activityChart");
+
+                if (subscriptionChart) subscriptionChart.destroy();
+                if (priorityChart) priorityChart.destroy();
+                if (activityChart) activityChart.destroy();
+
+                subscriptionChart = new Chart(subscriptionCanvas, {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Yes", "No"],
+                        datasets: [{
+                            data: [yes, no],
+                            backgroundColor: ["#16a37a", "#e6a23c"],
+                            borderWidth: 0,
+                            hoverOffset: 7
+                        }]
+                    },
+                    options: { ...commonOptions, cutout: "68%" }
+                });
+
+                priorityChart = new Chart(priorityCanvas, {
+                    type: "bar",
+                    data: {
+                        labels: ["High", "Medium", "Low"],
+                        datasets: [{
+                            label: "Customers",
+                            data: [high, medium, low],
+                            backgroundColor: ["#16a37a", "#e6a23c", "#8492a6"],
+                            borderRadius: 7,
+                            maxBarThickness: 48
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { precision: 0 } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+
+                const recent = rows.slice(-10);
+                activityChart = new Chart(activityCanvas, {
+                    type: "line",
+                    data: {
+                        labels: recent.map((_, i) => `Prediction ${i + 1}`),
+                        datasets: [
+                            {
+                                label: "Yes",
+                                data: recent.map(r => r.subscription === "yes" ? 1 : 0),
+                                borderColor: "#16a37a",
+                                backgroundColor: "rgba(22,163,122,.12)",
+                                tension: .35,
+                                fill: true
+                            },
+                            {
+                                label: "No",
+                                data: recent.map(r => r.subscription === "no" ? 1 : 0),
+                                borderColor: "#e6a23c",
+                                backgroundColor: "rgba(230,162,60,.08)",
+                                tension: .35,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 1,
+                                ticks: { stepSize: 1, callback: value => value === 1 ? "Predicted" : "—" }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                buildCharts();
+                const historyBody = document.getElementById("history-body");
+                if (historyBody) {
+                    new MutationObserver(buildCharts).observe(historyBody, {
+                        childList: true,
+                        subtree: true,
+                        characterData: true
+                    });
+                }
+                document.getElementById("refresh-history")?.addEventListener("click", () => {
+                    setTimeout(buildCharts, 400);
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
